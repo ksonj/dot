@@ -1,0 +1,7 @@
+# Configuration file for dot (https://github.com/ksonj/dot.git)
+
+# Where to find the dotfile repository
+DOTREMOTE=https://github.com/USER/dotfiles.git
+
+# Where to put the git repository (instead of just .git)
+DOTGIT=${HOME}/dotfiles.git
