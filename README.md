@@ -47,3 +47,7 @@ Enter a shell with `GIT_DIR` and `GIT_WORK_TREE` set.
 
 Most of the time you'll be using `dot` like `git` (e.g. edit some file, run `dot
 add`, `dot commit -m"..."` and `dot push`).
+
+## Dependencies
+
+* `zsh`
