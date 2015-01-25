@@ -13,11 +13,10 @@ Clone this repository
 
     git clone https://github.com/ksonj/dot.git
 
-Edit `dot` to match your setup (i.e. the location of the `git` repository with
-your dotfiles).
+Copy `dotrc` to `~/.dotrc` and edit it to match your setup (i.e. include the
+location to your dotfile repository).
 
-Then copy or symlink `dot` to somewhere on your `PATH`, run `dot initalize` and
-you're good to go!
+Then run `dot initalize` and you're good to go!
 
 ## well...
 ..., probably not quite: some of the files that are to be downloaded will most
