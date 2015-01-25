@@ -105,5 +105,5 @@ elif  [ "$subcmd" = "shell" ]; then
     dot_success
 else
     # else pass all arguments to git with GIT_DIR set
-    GIT_DIR=$DOTGIT git $@
+    GIT_DIR=$DOTGIT git "$@"
 fi
