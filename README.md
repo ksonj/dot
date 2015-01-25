@@ -33,14 +33,17 @@ again.
 `dot` provides 4 special commands, other than that it is just an alias to `git`
 with `GIT_DIR` and `GIT_WORK_TREE` set:
 
-### `dot clear`
+**`dot clear`**
 Remove conflicting files.
 
-### `dot unclear`
-Reinstates the latest backup created by `dot clear`.
+**`dot unclear`**
+Reinstate the latest backup created by `dot clear`.
 
-### `dot initialize`
+**`dot initialize`**
 Clone and initialize the dotfile repository.
 
-### `dot shell`
+**`dot shell`**
 Enter a shell with `GIT_DIR` and `GIT_WORK_TREE` set.
+
+Most of the time you'll be using `dot` like `git` (e.g. edit some file, run `dot
+add`, `dot commit -m"..."` and `dot push`).
