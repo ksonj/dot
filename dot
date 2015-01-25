@@ -1,19 +1,53 @@
-#!/bin/sh
-DOTGIT=${HOME}/dotfiles.git
-DOTHOST="kson@bootes.uberspace.de"
-REMOTEDIR="/home/kson/repos/dotfiles.git"
-DOTREMOTE="ssh://${DOTHOST}:${REMOTEDIR}"
-DEST=$HOME
+#!/usr/bin/zsh
+
+dot_clean_up(){
+    unset GIT_DIR
+    unset GIT_WORK_TREE
+    unset DOTREMOTE
+    unset DOTDEST
+    unset DOTGIT
+    cd $OLDPWD
+}
+
+dot_success(){
+    dot_clean_up
+    exit 0
+}
+
+dot_fail(){
+    dot_clean_up
+    echo "dot failed. See traceback for more information."
+    exit 1
+}
+
+# Read config from current dir
+source dotrc 2> /dev/null
+
+# Read config from $HOME/.dotrc
+source $HOME/.dotrc 2> /dev/null
+
+if [ -z "$DOTGIT" ];then
+    DOTGIT=${HOME}/dotfiles.git
+fi
+if [ -z "$DOTDEST" ];then
+    DOTDEST=$HOME
+fi
+if [ -z "$DOTREMOTE" ];then
+    echo "You have to define the remote location of your dotfile repository."
+    echo "Set DOTREMOTE or edit your ~/.dotrc."
+    dot_fail
+fi
+
 subcmd="$1"
 OLDCWD=`pwd`
 
-cd $DEST
+cd $DOTDEST
 dot_clear(){
     echo "This will delete all files provided by $DOTREMOTE."
     echo "Are you sure you want to continue? [yes/No]"
     read answer
     if [ "$answer" = "yes" ]; then
-        dotbackup=$DEST/dotfiles_BACKUP`date +%s`.tar
+        dotbackup=$DOTDEST/dotfiles_BACKUP`date +%s`.tar
         ssh $DOTHOST "cd ${REMOTEDIR} && git ls-tree -r HEAD --name-only" |\
             tee | tar -cf $dotbackup --ignore-failed-read --remove-files -T -
         ret=$?
@@ -40,8 +74,7 @@ dot_unclear(){
 
 dot_init(){
     export GIT_DIR=$DOTGIT
-    export GIT_WORK_TREE=$DEST
-    cd $DEST
+    export GIT_WORK_TREE=$DOTDEST
     git init
     git remote add origin $DOTREMOTE
     git checkout -b master
@@ -55,24 +88,12 @@ dot_init(){
 
 dot_submodule_init(){
     export GIT_DIR=$DOTGIT
-    export GIT_WORK_TREE=$DEST
-    cd $DEST
+    export GIT_WORK_TREE=$DOTDEST
     git submodule init
     git submodule update
     unset GIT_DIR
     unset GIT_WORK_TREE
     return $?
-}
-
-dot_success(){
-    cd $OLDPWD
-    exit 0
-}
-
-dot_fail(){
-    cd $OLDPWD
-    echo "dot failed. See traceback for more information."
-    exit 1
 }
 
 if [ "$subcmd" = "clear" ]; then
@@ -91,12 +112,12 @@ elif [ "$subcmd" = "init" ]; then
     # Clone dotfile repository into home directory
     dot_init
     if [ $? -ne 0 ]; then
-        echo "Destination $DEST is not clean. Run 'dot clear' first."
+        echo "Destination $DOTDEST is not clean. Run 'dot clear' first."
         dot_fail
     fi
     dot_submodule_init
     if [ $? -ne 0 ]; then
-        echo "Destination $DEST is not clean. Run 'dot clear' first."
+        echo "Destination $DOTDEST is not clean. Run 'dot clear' first."
         dot_fail
     fi
     dot_success
