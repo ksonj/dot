@@ -1,0 +1,109 @@
+#!/bin/sh
+DOTGIT=${HOME}/dotfiles.git
+DOTHOST="kson@bootes.uberspace.de"
+REMOTEDIR="/home/kson/repos/dotfiles.git"
+DOTREMOTE="ssh://${DOTHOST}:${REMOTEDIR}"
+DEST=$HOME
+subcmd="$1"
+OLDCWD=`pwd`
+
+cd $DEST
+dot_clear(){
+    echo "This will delete all files provided by $DOTREMOTE."
+    echo "Are you sure you want to continue? [yes/No]"
+    read answer
+    if [ "$answer" = "yes" ]; then
+        dotbackup=$DEST/dotfiles_BACKUP`date +%s`.tar
+        ssh $DOTHOST "cd ${REMOTEDIR} && git ls-tree -r HEAD --name-only" |\
+            tee | tar -cf $dotbackup --ignore-failed-read --remove-files -T -
+        ret=$?
+        if [ $ret -eq 0 ]; then
+            rm -rf $DOTGIT
+        fi
+        echo "Cleared files have been backed up in $dotbackup."
+        return $ret
+    else
+        return 0
+    fi
+}
+
+dot_unclear(){
+    dotbackup=`\ls -r dotfiles_BACKUP* | head -1`
+    tar xf $dotbackup
+    ret=$?
+    if [ $ret -eq 0 ]; then
+        rm $dotbackup
+        echo "Reinstated files from $dotbackup."
+    fi
+    return $ret
+}
+
+dot_init(){
+    export GIT_DIR=$DOTGIT
+    export GIT_WORK_TREE=$DEST
+    cd $DEST
+    git init
+    git remote add origin $DOTREMOTE
+    git checkout -b master
+    git pull origin master
+    git branch --set-upstream-to origin/master master
+    git config status.showuntrackedfiles no
+    unset GIT_DIR
+    unset GIT_WORK_TREE
+    return $?
+}
+
+dot_submodule_init(){
+    export GIT_DIR=$DOTGIT
+    export GIT_WORK_TREE=$DEST
+    cd $DEST
+    git submodule init
+    git submodule update
+    unset GIT_DIR
+    unset GIT_WORK_TREE
+    return $?
+}
+
+dot_success(){
+    cd $OLDPWD
+    exit 0
+}
+
+dot_fail(){
+    cd $OLDPWD
+    echo "dot failed. See traceback for more information."
+    exit 1
+}
+
+if [ "$subcmd" = "clear" ]; then
+    dot_clear
+    if [ $? -ne 0 ]; then
+        dot_fail
+    fi
+    dot_success
+elif [ "$subcmd" = "unclear" ]; then
+    dot_unclear
+    if [ $? -ne 0 ]; then
+        dot_fail
+    fi
+    dot_success
+elif [ "$subcmd" = "init" ]; then
+    # Clone dotfile repository into home directory
+    dot_init
+    if [ $? -ne 0 ]; then
+        echo "Destination $DEST is not clean. Run 'dot clear' first."
+        dot_fail
+    fi
+    dot_submodule_init
+    if [ $? -ne 0 ]; then
+        echo "Destination $DEST is not clean. Run 'dot clear' first."
+        dot_fail
+    fi
+    dot_success
+elif  [ "$subcmd" = "shell" ]; then
+    GIT_DIR=$DOTGIT zsh
+    dot_success
+else
+    # else pass all arguments to git with GIT_DIR set
+    GIT_DIR=$DOTGIT git $@
+fi
