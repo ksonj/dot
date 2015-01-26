@@ -41,7 +41,6 @@ fi
 subcmd="$1"
 OLDCWD=`pwd`
 
-cd $DOTDEST
 dot_clear(){
     echo "This will delete all files provided by $DOTREMOTE."
     echo "Are you sure you want to continue? [yes/No]"
@@ -97,18 +96,21 @@ dot_submodule_init(){
 }
 
 if [ "$subcmd" = "clear" ]; then
+    cd $DOTDEST
     dot_clear
     if [ $? -ne 0 ]; then
         dot_fail
     fi
     dot_success
 elif [ "$subcmd" = "unclear" ]; then
+    cd $DOTDEST
     dot_unclear
     if [ $? -ne 0 ]; then
         dot_fail
     fi
     dot_success
 elif [ "$subcmd" = "initialize" ]; then
+    cd $DOTDEST
     # Clone dotfile repository into home directory
     dot_init
     if [ $? -ne 0 ]; then
@@ -122,9 +124,11 @@ elif [ "$subcmd" = "initialize" ]; then
     fi
     dot_success
 elif  [ "$subcmd" = "shell" ]; then
+    cd $OLDCWD
     GIT_DIR=$DOTGIT zsh
     dot_success
 else
     # else pass all arguments to git with GIT_DIR set
+    cd $OLDCWD
     GIT_DIR=$DOTGIT git "$@"
 fi
