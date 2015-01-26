@@ -5,7 +5,11 @@ machines.
 
 The dotfiles live in a separate `git` repository that is managed via `dot`.
 I've put this together as an replacement to `vcsh` (which probably is what you
-should be using instead) for reasons I do not quite remember.
+should be using instead) because I was confused with how to use submodules.
+With `dot` I add various submodules via `dot submodule add REPO`. When I work
+on the submodules itself I do not use the `dot` wrapper directly, but usual
+`git` instead. After comitting in the submodule, I add and commit via `dot`.
+So far I've had no issues.
 
 ## Installation
 
