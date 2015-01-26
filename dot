@@ -48,7 +48,7 @@ dot_clear(){
     read answer
     if [ "$answer" = "yes" ]; then
         dotbackup=$DOTDEST/dotfiles_BACKUP`date +%s`.tar
-        ssh $DOTHOST "cd ${REMOTEDIR} && git ls-tree -r HEAD --name-only" |\
+        ssh $DOTHOST "cd ${DOTREMOTEDIR} && git ls-tree -r HEAD --name-only" |\
             tee | tar -cf $dotbackup --ignore-failed-read --remove-files -T -
         ret=$?
         if [ $ret -eq 0 ]; then
