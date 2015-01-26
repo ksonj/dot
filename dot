@@ -108,7 +108,7 @@ elif [ "$subcmd" = "unclear" ]; then
         dot_fail
     fi
     dot_success
-elif [ "$subcmd" = "init" ]; then
+elif [ "$subcmd" = "initalize" ]; then
     # Clone dotfile repository into home directory
     dot_init
     if [ $? -ne 0 ]; then
