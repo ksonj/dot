@@ -5,7 +5,7 @@ DOTHOST=USER@HOST
 DOTREMOTEDIR=/home/USER/repos/dotfiles.git
 DOTPROTOCOL=ssh  # only ssh is supported
 
-DOTREMOTE=${DOTPROTOCOL}:${DOTHOST}:${DOTREMOTEDIR}
+DOTREMOTE=${DOTPROTOCOL}://${DOTHOST}:${DOTREMOTEDIR}
 
 # Where to put the git repository (instead of just .git)
 DOTGIT=${HOME}/dotfiles.git
